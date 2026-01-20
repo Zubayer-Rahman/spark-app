@@ -1,16 +1,15 @@
 import { router } from "expo-router";
-import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import IconButton from "../components/Buttons";
+import {useEffect} from "react";
 
 const SecondSplashScreen = () => {
-  //   useEffect(() => {
-  //     const timer = setTimeout(() => {
-  //       router.replace("/(auth)/login");
-  //     }, 5000);
-
-  //     return () => clearTimeout(timer);
-  //   }, []);
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        router.replace("/(auth)/login");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }, []);
   return (
     <View style={styles.container}>
       <Image
@@ -29,7 +28,7 @@ const SecondSplashScreen = () => {
           <IconButton
             title="Get Started"
             onPress={() => {
-              router.replace("/(auth)/login");
+              router.replace("/(tabs)/HomeScreen");
             }}
             iconName="chevron-forward-outline"
           />
@@ -44,11 +43,7 @@ const SecondSplashScreen = () => {
           }}
         >
           <Text>Not a member?</Text>
-          <Pressable
-            onPress={() => {
-              router.replace("/(auth)/signup");
-            }}
-          >
+          <Pressable>
             <Text style={{ color: "green", fontSize: 13, fontWeight: "bold" }}>
               Register Now
             </Text>
