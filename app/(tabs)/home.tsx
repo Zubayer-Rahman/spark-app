@@ -149,19 +149,6 @@ const HomeScreen = () => {
                                                 </Pressable>
                                             </View>
                                             <Image source={product.image} style={styles.dishImage} />
-                                            <View style={styles.dishInfo}>
-                                                <Text style={styles.dishName} numberOfLines={1}>
-                                                    {product.name}
-                                                </Text>
-                                                <View style={styles.priceRow}>
-                                                    <Text style={styles.dishPrice}>
-                                                        ${discountedPrice.toFixed(2)}
-                                                    </Text>
-                                                    <Text style={styles.dishOriginalPrice}>
-                                                        ${product.originalPrice.toFixed(2)}
-                                                    </Text>
-                                                </View>
-                                            </View>
                                         </View>
                                     </Pressable>
                                 );
@@ -354,16 +341,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
-    },
-    dishPrice: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#2F9C5C',
-    },
-    dishOriginalPrice: {
-        fontSize: 12,
-        color: '#999',
-        textDecorationLine: 'line-through',
     },
     bottomSpacing: {
         height: 100,
