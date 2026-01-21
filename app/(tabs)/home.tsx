@@ -1,10 +1,36 @@
-import {Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, StatusBar, Pressable} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import {Icon} from "expo-router/build/native-tabs";
+import {
+    Image,
+    StyleSheet,
+    View,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+    StatusBar,
+    Pressable,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useAppSelector } from '../store/hooks';
+import { selectAllProducts } from '../store/productsSlice';
+
+interface Category {
+    name: string;
+    emoji: string;
+}
 
 const HomeScreen = () => {
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const products = useAppSelector(selectAllProducts);
+    const router = useRouter();
+
+    const handleProductPress = (productId: string): void => {
+        router.push({
+          pathname: '../productDetails',
+          params: { productId }
+        });
+    };
+
     return (
         <View style={styles.wrapper}>
             <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
@@ -22,37 +48,46 @@ const HomeScreen = () => {
                     {/* Header Section */}
                     <View style={styles.header}>
                         <Image
-                            source={require("../../assets/images/food-network 1.png")}
+                            source={require('../../assets/images/food-network 1.png')}
                             style={styles.logo}
                         />
                     </View>
 
-                    {/*profile section*/}
-                    <View style={{marginBottom: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                        <View style={{flexDirection:"row", gap: 10, alignItems: "center"}}>
+                    {/* Profile Section */}
+                    <View style={styles.profileSection}>
+                        <View style={styles.profileInfo}>
                             <Image
-                                source={require("../../assets/images/profile-pic.png")}
-                                style={{width: 50, height: 50}}
+                                source={require('../../assets/images/profile-pic.png')}
+                                style={styles.profilePic}
                             />
                             <View>
-                                <Text style={{fontSize: 22, fontWeight: "bold"}}>Hi Zubayer</Text>
-                                <Text>Welcome Back!</Text>
+                                <Text style={styles.greeting}>Hi Zubayer</Text>
+                                <Text style={styles.welcomeText}>Welcome Back!</Text>
                             </View>
                         </View>
 
-                        <View style={{flexDirection: "row", gap: 10, }}>
+                        <View style={styles.iconContainer}>
                             <Pressable>
-                                <Image source={require("../../assets/images/Message.png")} style={{width: 25, height: 25}} />
+                                <Image
+                                    source={require('../../assets/images/Message.png')}
+                                    style={styles.icon}
+                                />
                             </Pressable>
                             <Pressable>
-                                <Image source={require("../../assets/images/notification.png")} style={{width: 25, height: 25}}/>
+                                <Image
+                                    source={require('../../assets/images/notification.png')}
+                                    style={styles.icon}
+                                />
                             </Pressable>
                         </View>
                     </View>
 
-                    {/*banner*/}
+                    {/* Banner */}
                     <View style={styles.bannerContainer}>
-                        <Image source={require("../../assets/images/banner.png")} style={styles.bannerImage} resizeMode="cover"
+                        <Image
+                            source={require('../../assets/images/banner.png')}
+                            style={styles.bannerImage}
+                            resizeMode="cover"
                         />
                     </View>
 
@@ -70,7 +105,7 @@ const HomeScreen = () => {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.categoriesContainer}
                         >
-                            {categories.map((category, index) => (
+                            {categories.map((category: Category, index: number) => (
                                 <TouchableOpacity key={index} style={styles.categoryCard}>
                                     <View style={styles.categoryIcon}>
                                         <Text style={styles.categoryEmoji}>{category.emoji}</Text>
@@ -81,7 +116,7 @@ const HomeScreen = () => {
                         </ScrollView>
                     </View>
 
-                    {/* Popular Dishes Section */}
+                    {/* Flash Sale Section */}
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
                             <Text style={styles.sectionTitle}>Flash Sale</Text>
@@ -90,27 +125,47 @@ const HomeScreen = () => {
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            {products.map((product) => {
+                                const discountedPrice = product.originalPrice * (1 - product.discount / 100);
 
-                        >
-                            {popularDishes.map((dish, index) => (
-                                <Pressable key={index} style={styles.dishCard}>
-                                    <View>
-                                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                            <Text style={{backgroundColor: "#2F9C5C", padding: 5, marginTop: 5, borderRadius: 12, color: "white"}}>{dish.sale}</Text>
+                                return (
+                                    <Pressable
+                                        key={product.id}
+                                        style={styles.dishCard}
+                                        onPress={() => handleProductPress(product.id)}
+                                    >
+                                        <View>
+                                            <View style={styles.dishCardHeader}>
+                                                <Text style={styles.saleTag}>{product.discount}%</Text>
 
-                                            <Pressable onPress={() => setIsLiked(!isLiked)} style={{backgroundColor: "white", padding: 5, borderRadius: "50%"}}>
-                                                <Text style={{ fontSize: 20, color: isLiked ? 'red' : 'grey' }}>
-                                                    {isLiked ? '❤️' : '🤍'}
+                                                <Pressable
+                                                    onPress={() => setIsLiked(!isLiked)}
+                                                    style={styles.likeButton}
+                                                >
+                                                    <Text style={styles.likeIcon}>
+                                                        {isLiked ? '❤️' : '🤍'}
+                                                    </Text>
+                                                </Pressable>
+                                            </View>
+                                            <Image source={product.image} style={styles.dishImage} />
+                                            <View style={styles.dishInfo}>
+                                                <Text style={styles.dishName} numberOfLines={1}>
+                                                    {product.name}
                                                 </Text>
-                                            </Pressable>
+                                                <View style={styles.priceRow}>
+                                                    <Text style={styles.dishPrice}>
+                                                        ${discountedPrice.toFixed(2)}
+                                                    </Text>
+                                                    <Text style={styles.dishOriginalPrice}>
+                                                        ${product.originalPrice.toFixed(2)}
+                                                    </Text>
+                                                </View>
+                                            </View>
                                         </View>
-                                        <Image source={dish.image}/>
-                                    </View>
-                                </Pressable>
-                            ))}
+                                    </Pressable>
+                                );
+                            })}
                         </ScrollView>
                     </View>
 
@@ -124,32 +179,18 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
-const categories = [
-    { name: "Pizza", emoji: "🍕" },
-    { name: "Burger", emoji: "🍔" },
-    { name: "Sushi", emoji: "🍣" },
-    { name: "Pasta", emoji: "🍝" },
-    { name: "Salad", emoji: "🥗" },
-    { name: "Dessert", emoji: "🍰" },
-];
-
-const popularDishes = [
-    {
-        sale: "50%",
-        color: "#C3F5B0",
-        image: require("../../assets/images/dish.png"),
-    },
-    {
-        sale: "50%",
-        color: "#C3F5B0",
-        image: require("../../assets/images/dish.png"),
-    },
+const categories: Category[] = [
+    { name: 'Pizza', emoji: '🍕' },
+    { name: 'Burger', emoji: '🍔' },
+    { name: 'Sushi', emoji: '🍣' },
+    { name: 'Pasta', emoji: '🍝' },
+    { name: 'Salad', emoji: '🥗' },
+    { name: 'Dessert', emoji: '🍰' },
 ];
 
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
-        backgroundColor: 'linear-gradient(180deg,rgba(206, 234, 211, 1) 0%, rgba(248, 252, 245, 1) 35%)',
     },
     gradient: {
         flex: 1,
@@ -168,60 +209,81 @@ const styles = StyleSheet.create({
         height: '90%',
         borderRadius: 30,
     },
-    // Header Styles
     header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 25,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: "#5a8569",
     },
     logo: {
         width: 80,
         height: 40,
     },
-
-    // Section Styles
+    profileSection: {
+        marginBottom: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    profileInfo: {
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+    },
+    profilePic: {
+        width: 50,
+        height: 50,
+    },
+    greeting: {
+        fontSize: 22,
+        fontWeight: 'bold',
+    },
+    welcomeText: {
+        fontSize: 14,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    icon: {
+        width: 25,
+        height: 25,
+    },
     section: {
         marginBottom: 25,
     },
     sectionHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 15,
     },
     sectionTitle: {
         fontSize: 20,
-        fontWeight: "bold",
-        color: "#010101",
+        fontWeight: 'bold',
+        color: '#010101',
     },
     seeAll: {
         fontSize: 14,
-        color: "#5a8569",
-        fontWeight: "600",
+        color: '#5a8569',
+        fontWeight: '600',
     },
-
-    // Category Styles
     categoriesContainer: {
         gap: 12,
         paddingRight: 20,
     },
     categoryCard: {
-        alignItems: "center",
+        alignItems: 'center',
         gap: 8,
     },
     categoryIcon: {
         width: 70,
         height: 70,
         borderRadius: 35,
-        backgroundColor: "white",
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -232,26 +294,78 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         fontSize: 13,
-        fontWeight: "600",
-        color: "#2d5f3f",
+        fontWeight: '600',
+        color: '#2d5f3f',
     },
-
-    // Dish Card Styles
     dishCard: {
-        backgroundColor: "#C3F5B0",
+        backgroundColor: '#C3F5B0',
         borderRadius: 20,
         padding: 12,
         marginBottom: 15,
         marginRight: 20,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
-        alignItems: "center",
+        width: 180,
     },
-    // Bottom Spacing
+    dishCardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    saleTag: {
+        backgroundColor: '#2F9C5C',
+        padding: 5,
+        marginTop: 5,
+        borderRadius: 12,
+        color: 'white',
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    likeButton: {
+        backgroundColor: 'white',
+        padding: 5,
+        borderRadius: 50,
+        width: 35,
+        height: 35,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    likeIcon: {
+        fontSize: 20,
+    },
+    dishImage: {
+        width: 150,
+        height: 150,
+        alignSelf: 'center',
+        marginVertical: 10,
+    },
+    dishInfo: {
+        marginTop: 8,
+    },
+    dishName: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#2d5f3f',
+        marginBottom: 4,
+    },
+    priceRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    dishPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#2F9C5C',
+    },
+    dishOriginalPrice: {
+        fontSize: 12,
+        color: '#999',
+        textDecorationLine: 'line-through',
+    },
     bottomSpacing: {
-        height: 100, // Space for navbar
+        height: 100,
     },
 });

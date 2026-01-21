@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
         {
             name: 'Likes',
             route: '/(tabs)/likes',
-            icon: require('../assets/images/notification.png'),
+            icon: require('../assets/images/bell.png'),
         },
         {
             name: 'Cart',

@@ -28,7 +28,7 @@ const SecondSplashScreen = () => {
           <IconButton
             title="Get Started"
             onPress={() => {
-              router.replace("/(tabs)/HomeScreen");
+              router.replace("/(auth)/login");
             }}
             iconName="chevron-forward-outline"
           />

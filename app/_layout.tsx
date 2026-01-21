@@ -2,19 +2,20 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { Stack } from "expo-router";
 import "react-native-reanimated";
-import {useFonts} from "expo-font";
-import {useEffect} from "react";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
 import * as SplashScreen from 'expo-splash-screen';
-
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
-  throw new Error("Missing your EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY");
+    throw new Error("Missing your EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY");
 }
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+    initialRouteName: "(tabs)",
 };
 
 export default function RootLayout() {
@@ -34,14 +35,24 @@ export default function RootLayout() {
     if (!fontsLoaded) {
         return null;
     }
-  return (
-      <ClerkProvider
-          tokenCache={tokenCache}
-          publishableKey={publishableKey}
-      >
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </ClerkProvider>
-  );
+
+    return (
+        <Provider store={store}>
+            <ClerkProvider
+                tokenCache={tokenCache}
+                publishableKey={publishableKey}
+            >
+                <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="product-detail"
+                        options={{
+                            headerShown: false,
+                            presentation: 'card'
+                        }}
+                    />
+                </Stack>
+            </ClerkProvider>
+        </Provider>
+    );
 }
